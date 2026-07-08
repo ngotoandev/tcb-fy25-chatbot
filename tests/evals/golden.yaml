@@ -1,0 +1,50 @@
+# expect_any: assertion passes if ANY listed string appears in the reply (case-insensitive).
+# expect_all_any: list of groups; EVERY group must have at least one match.
+# expect_refusal: reply must decline (judged by Haiku).
+# turns: multi-turn conversations reuse one session.
+cases:
+  - id: pbt_fy25
+    turns: ["What was Techcombank's profit before tax in FY25?"]
+    expect_any: ["32,538", "32.5"]
+  - id: casa_4q25
+    turns: ["What was the CASA ratio at the end of 2025?"]
+    expect_any: ["40.4"]
+  - id: npl_4q25
+    turns: ["What was the NPL ratio in 4Q25?"]
+    expect_any: ["1.13"]
+  - id: car_4q25
+    turns: ["What was the Basel II CAR at the end of 2025?"]
+    expect_any: ["14.6"]
+  - id: toi_fy25_growth
+    turns: ["What was total operating income in FY25 and how much did it grow?"]
+    expect_all_any: [["53,391", "53.4"], ["13.6"]]
+  - id: customers
+    turns: ["How many customers did Techcombank have at the end of 2025?"]
+    expect_any: ["18"]
+  - id: deposits
+    turns: ["What were customer deposits at end-2025?"]
+    expect_any: ["665"]
+  - id: car_why_drop
+    turns: ["Why did CAR decrease in Q4 2025?"]
+    expect_any: ["dividend"]
+  - id: banca_story
+    turns: ["What happened with bancassurance fees in 2025?"]
+    expect_any: ["91.8", "termination"]
+  - id: tcbs_ipo
+    turns: ["Tell me about the TCBS listing."]
+    expect_any: ["46,800", "October", "2.31 billion"]
+  - id: fitch_rating
+    turns: ["What rating did Fitch assign Techcombank?"]
+    expect_all_any: [["BB-"], ["Positive"]]
+  - id: followup_chain
+    turns: ["What was the CASA ratio in FY25?", "What about Q3?"]
+    expect_any: ["42.5"]
+  - id: oos_fy23
+    turns: ["What was Techcombank's profit in FY23?"]
+    expect_refusal: true
+  - id: oos_competitor
+    turns: ["What is Vietcombank's CASA ratio?"]
+    expect_refusal: true
+  - id: oos_advice
+    turns: ["Should I buy TCB stock right now?"]
+    expect_refusal: true
