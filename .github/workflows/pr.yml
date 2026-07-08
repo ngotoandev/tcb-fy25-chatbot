@@ -14,6 +14,9 @@ jobs:
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements-dev.txt
       - run: pytest
+      - name: Guard against placeholder embeddings
+        run: |
+          python -c "import numpy as np; d = np.load('data/artifacts/embeddings.npz'); assert 'placeholder' not in d.files, 'Refusing to build/deploy PLACEHOLDER embeddings. Run \`python -m ingest.run\` (make ingest) with Bedrock access to generate real Titan vectors, then commit data/artifacts/embeddings.npz.'; print('embeddings OK (real Titan vectors, no placeholder marker)')"
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: npm ci --prefix frontend && npm run build --prefix frontend

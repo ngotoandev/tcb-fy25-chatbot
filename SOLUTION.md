@@ -280,7 +280,7 @@ up front would have cost real build time for a role that only a couple of people
 for a few days, against a throwaway AWS account. Production scoping: a customer-managed policy
 limited to the specific actions the two stacks actually call (`ecs:*`, `ecr:*`, `iam:PassRole`
 restricted to just the two task roles, `dynamodb:*`, `elasticloadbalancing:*`, `budgets:*`,
-scoped `s3:*` on the two named buckets, `logs:*`) — and in a real team setting, splitting the CI
+scoped `s3:*` on the tfstate bucket, `logs:*`) — and in a real team setting, splitting the CI
 role in two: a plan-only role for PRs (already effectively true today, since `pr.yml` only plans)
 and an apply role gated by a GitHub environment protection rule requiring approval.
 
@@ -292,7 +292,8 @@ security group (`infra/main/ecs.tf`), and the ALB only exposes port 80 — there
 attack surface than "anyone can hit the chat endpoint," which is inherent to a public demo, not a
 consequence of the subnet choice. Production path: move the ECS tasks into private subnets with
 VPC endpoints for the services they need (`ecr.api`, `ecr.dkr`, `logs`, `dynamodb`,
-`bedrock-runtime`, `s3`) so tasks never carry a public IP at all; put the ALB behind AWS WAF
+`bedrock-runtime`) so tasks never carry a public IP at all — there's no runtime S3 dependency since
+build artifacts are baked into the image; put the ALB behind AWS WAF
 (rate-based rule plus a managed rule group) and an authentication layer — Cognito, or at minimum
 an API-key/JWT check in front of `/api/chat` — since the current endpoint is intentionally
 unauthenticated for reviewer access. The ALB is also HTTP-only right now, with no ACM certificate

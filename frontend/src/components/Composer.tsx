@@ -11,7 +11,7 @@ export default function Composer({ disabled, onSend }:
   return (
     <form onSubmit={submit} className="flex gap-2 pt-2 border-t border-slate-200">
       <input value={text} onChange={(e) => setText(e.target.value)} disabled={disabled}
-        placeholder="Ask about Techcombank's FY25 results…"
+        placeholder="Ask about Techcombank's FY25 results…" maxLength={2000}
         className="flex-1 rounded-xl border border-slate-300 px-4 py-2 focus:outline-none focus:border-red-500 bg-white" />
       <button disabled={disabled || !text.trim()}
         className="bg-red-700 text-white rounded-xl px-5 py-2 disabled:opacity-40">

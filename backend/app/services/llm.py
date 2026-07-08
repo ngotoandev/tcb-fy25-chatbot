@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import time
 import boto3
@@ -9,6 +10,7 @@ EMBED_MODEL = "amazon.titan-embed-text-v2:0"
 RETRYABLE = {"ThrottlingException", "ServiceUnavailableException", "ModelTimeoutException",
              "InternalServerException"}
 MOCK_ROUTER_JSON = json.dumps({"intent": "narrative", "standalone_query": "mock", "complexity": "simple"})
+logger = logging.getLogger(__name__)
 
 class LLMClient:
     def __init__(self, settings: Settings) -> None:
@@ -51,5 +53,6 @@ class LLMClient:
             body = json.dumps({"inputText": text[:8000], "dimensions": 1024, "normalize": True})
             resp = self._client.invoke_model(modelId=EMBED_MODEL, body=body)
             return np.asarray(json.loads(resp["body"].read())["embedding"], dtype=np.float32)
-        except Exception:
+        except Exception as exc:
+            logger.warning("embed_query failed, falling back to BM25-only retrieval: %s", exc)
             return None  # degrade to BM25-only retrieval

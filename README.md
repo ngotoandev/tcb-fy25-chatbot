@@ -100,7 +100,7 @@ would be solving a problem this corpus doesn't have. `SOLUTION.md` §4 names the
 - **`infra/bootstrap/`** — one-time, hand-applied Terraform: state bucket, GitHub OIDC provider +
   CI role, ECR repo.
 - **`infra/main/`** — CI-applied Terraform: VPC, ALB, ECS Fargate service, DynamoDB sessions
-  table, S3 artifacts bucket, CloudWatch logs, AWS Budget alert.
+  table, CloudWatch logs, AWS Budget alert.
 - **`.github/workflows/`** — `deploy.yml` (push to `main`) and `pr.yml` (tests + `terraform
   plan`).
 - **`tests/`** — pytest suite: unit/integration (no AWS) plus the golden-eval suite (opt-in,
