@@ -1,0 +1,6 @@
+from typing import Protocol
+from app.models import Turn
+
+class SessionStore(Protocol):
+    def get(self, session_id: str) -> list[Turn]: ...
+    def append(self, session_id: str, turn: Turn) -> None: ...
