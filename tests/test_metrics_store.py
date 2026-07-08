@@ -27,3 +27,17 @@ def test_render_trend_lists_quarters():
     text = store.render(hits, "How did the CASA ratio evolve over 2025?")
     for v in ("39.4", "41.1", "42.5", "40.4"):
         assert v in text
+
+def test_lookup_plural_npl():
+    hits = store.lookup("What are the NPLs in FY25?")
+    assert hits and hits[0]["metric_id"] == "npl"
+
+def test_lookup_plural_revenue():
+    hits = store.lookup("What were revenues in FY25?")
+    assert any(h["metric_id"] == "toi" for h in hits)
+
+def test_lookup_card_not_car():
+    # plural tolerance must NOT reopen the car-in-card false positive
+    hits = store.lookup("How much were card fees in FY25?")
+    assert hits and hits[0]["metric_id"] == "card_fees"
+    assert all(h["metric_id"] != "car_basel2" for h in hits)

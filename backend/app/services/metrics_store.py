@@ -54,7 +54,7 @@ class MetricsStore:
                 # exact alias/id phrase match is a strong signal, but only as a whole
                 # word/phrase -- a plain substring check would let a short alias like
                 # "car" spuriously match inside an unrelated word like "card".
-                if re.search(rf"\b{re.escape(name.lower())}\b", qlower):
+                if re.search(rf"\b{re.escape(name.lower())}s?\b", qlower):
                     overlap = max(overlap, 1.0)
                 # on a tie, prefer whichever name/alias is more specific (more tokens)
                 # so e.g. "casa balance" (2 tokens) outranks the generic "casa" alias
