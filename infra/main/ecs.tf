@@ -70,5 +70,14 @@ resource "aws_ecs_service" "app" {
     container_name   = "app"
     container_port   = local.app_port
   }
-  depends_on = [aws_lb_listener.http]
+  # Give a cold first task time to pull the multi-stage image + attach its ENI
+  # before ALB health signals can trigger a replace loop.
+  health_check_grace_period_seconds = 120
+  # Ensure the task/execution IAM policies exist before the first task launches,
+  # so the initial task isn't denied Bedrock/DynamoDB/ECR on a first apply.
+  depends_on = [
+    aws_lb_listener.http,
+    aws_iam_role_policy.task,
+    aws_iam_role_policy_attachment.execution,
+  ]
 }

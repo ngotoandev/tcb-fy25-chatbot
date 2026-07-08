@@ -20,6 +20,10 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
+  # A chat turn can make two sequential Bedrock calls with retry/backoff; on a
+  # new account with low quotas, throttling can push latency past the 60s ALB
+  # default and surface as a 504. Give the backend more headroom.
+  idle_timeout = 120
 }
 
 resource "aws_lb_target_group" "app" {
