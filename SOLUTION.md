@@ -215,9 +215,10 @@ sized to what a single, small, static document actually requires.
 ## 5. Evaluation
 
 **Design.** A golden suite of 15 cases exercises the live pipeline end to end through
-`/api/chat`, specified in the implementation plan
-(`docs/superpowers/plans/2026-07-08-tcb-rag-chatbot.md`, Task 17) as `tests/evals/golden.yaml` +
-`tests/evals/test_evals.py`, run via `pytest -m eval -s` against real Bedrock (`MOCK_LLM=false`):
+`/api/chat`, implemented as `tests/evals/golden.yaml` + `tests/evals/test_evals.py` and run via
+`pytest -m eval -s` against real Bedrock (`MOCK_LLM=false`). The cases are marked with a `pytest`
+`eval` marker that `pytest.ini` excludes by default, so they never run in the normal suite or CI
+unit-test job (which stays credential-free) — `pytest -m eval` opts in:
 
 - **7 exact-metric cases** — PBT, CASA ratio, NPL ratio, Basel II CAR, TOI (with its YoY growth
   figure), customer count, customer deposits — each asserting the reply contains the correct
@@ -241,14 +242,14 @@ answer?" and expects `YES` — rather than string-matching the refusal text itse
 can be phrased many ways, and the interesting failure mode (a refusal that leaks a fabricated
 number anyway) wouldn't be caught by keyword matching alone.
 
-> **TODO (pending):** the eval suite above is fully specified but not yet implemented as runnable
-> test files, and has not been run. Both wait on AWS Bedrock model access being granted for this
-> account — the same environmental gate that has `data/artifacts/embeddings.npz` still running on
-> deterministic placeholder vectors rather than real Titan embeddings (see the ledger note in the
-> design spec's risk table). Once access lands: implement `tests/evals/golden.yaml` /
-> `tests/evals/test_evals.py` per the design above, regenerate real embeddings via `python -m
-> ingest.run`, run `pytest -m eval -s`, target 15/15, and paste the pass/fail table here (also
-> saved to `docs/eval-results.md`).
+> **TODO (pending results):** the eval suite is implemented and wired (`tests/evals/golden.yaml`
+> holds all 15 cases; `pytest -m eval --collect-only` lists them), but has not yet been *run* —
+> it waits on AWS Bedrock model access being granted for this account. That's the same
+> environmental gate that has `data/artifacts/embeddings.npz` still running on deterministic
+> placeholder vectors rather than real Titan embeddings (and a CI guard in `deploy.yml` refuses to
+> build an image on placeholder embeddings, so a deploy can't accidentally ship them). Once access
+> lands: regenerate real embeddings via `python -m ingest.run`, run `pytest -m eval -s`, target
+> 15/15, and paste the pass/fail table here (also saved to `docs/eval-results.md`).
 
 **What 15/15 would and wouldn't prove.** If every case passes, that's real evidence the live
 pipeline — router, both retrieval paths, both answer models, the refusal guard — produces correct
