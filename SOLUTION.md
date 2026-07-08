@@ -57,8 +57,8 @@ similarity like everything else. Two things break:
 
 - *Chunk boundaries would split structure that matters.* The table has three sub-blocks with
   **different column schemes** — the Balance Sheet and Capital & Liquidity blocks are five
-  quarterly columns (4Q24…4Q25); the Profitability block is 4Q24, 4Q25, a QoQ delta, then FY24,
-  FY25, an annual delta. A chunker that doesn't know this is a table (`pdfplumber`'s own table
+  quarterly columns (4Q24…4Q25); the Profitability block is 4Q24, 4Q25, a YoY delta, then FY24,
+  FY25, an annual YoY delta. A chunker that doesn't know this is a table (`pdfplumber`'s own table
   detector mangles page 12's two-column glossary into one garbled cell for exactly this kind of
   reason — I checked the parsed output directly) would happily split mid-block and lose which
   header row a number belongs to.
@@ -341,12 +341,12 @@ through a wrapper that would need to be unwound to swap out later.
 Roughly in the order I'd tackle them:
 
 - **SSE streaming.** The current `/api/chat` is request/response, not streamed — noted as out of
-  scope for this build in the frontend's own code. For a chat product this is the first thing a
+  scope for this 48h build in the design spec. For a chat product this is the first thing a
   user would notice; it's a moderate backend change (stream tokens from the Bedrock Converse
   stream API instead of the blocking call) and a frontend change to render incrementally.
 - **Vietnamese-language support.** The source press release and the UI are both English, but the
   audience for a Techcombank product is predominantly Vietnamese-speaking. Doing this well means
-  more than translating the system prompt — the router's period extraction
+  more than translating the system prompt — the metrics store's period extraction
   (`extract_periods()` in `metrics_store.py`) and the metric alias lists would both need
   Vietnamese variants, not just a translated final answer.
 - **Conversation summarization for long sessions.** History is currently just truncated to the
