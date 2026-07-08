@@ -127,40 +127,61 @@ A few of these are worth a sentence more:
 ## 3. Model efficiency
 
 The assignment's hint is explicit: route cheap requests to a cheap model, and don't pay
-Sonnet-tier latency/cost for a lookup a Haiku-tier model can do correctly. There is exactly one
-router decision per turn, and everything downstream of it is gated by that decision:
+Nova Pro-tier latency/cost for a lookup a Nova Lite-tier model can do correctly. There is exactly
+one router decision per turn, and everything downstream of it is gated by that decision:
 
 | Stage | Model | Typical tokens (estimated) | Input $ / 1M tok | Output $ / 1M tok |
 |---|---|---|---|---|
-| Router (classify + rewrite) | Claude Haiku 4.5 | ~300–600 in / ~80 out | $1.00 | $5.00 |
-| Simple fact answers | Claude Haiku 4.5 | ~600–900 in / ~150 out | $1.00 | $5.00 |
-| Analytical / hybrid answers | Claude Sonnet 4.5 | ~2,000–3,000 in / ~300–500 out | $3.00 | $15.00 |
-| Golden-eval refusal judge | Claude Haiku 4.5 | ~50 in / ~5 out | $1.00 | $5.00 |
+| Router (classify + rewrite) | Amazon Nova Lite | ~300–600 in / ~80 out | $0.06 | $0.24 |
+| Simple fact answers | Amazon Nova Lite | ~600–900 in / ~150 out | $0.06 | $0.24 |
+| Analytical / hybrid answers | Amazon Nova Pro | ~2,000–3,000 in / ~300–500 out | $0.80 | $3.20 |
+| Golden-eval refusal judge | Amazon Nova Lite | ~50 in / ~5 out | $0.06 | $0.24 |
 | Query embeddings | Titan Text Embeddings V2 | ~10–30 in (query only) | $0.02 | — (no output tokens) |
 
-(Bedrock on-demand pricing, `us-east-1`, current as of this write-up. Token counts are estimates
-from this codebase's actual prompt sizes, not yet measured against live traffic — golden evals
-against real Bedrock are still pending; see §5.)
+(Bedrock on-demand pricing, `us-east-1`, approximate and indicative as of this write-up, not
+quoted rates. Token counts are estimates from this codebase's actual prompt sizes, not yet
+measured against live traffic — golden evals against real Bedrock are still pending; see §5. For
+contrast, Claude Haiku 4.5 runs ~$1.00 / $5.00 and Sonnet 4.5 ~$3.00 / $15.00 per 1M tokens in/out
+on Bedrock — Nova is materially cheaper on both tiers, so switching back to Claude would raise
+every number below, not lower it.)
+
+**Why Nova, not Claude.** The three model IDs above are plain `Settings` fields
+(`backend/app/config.py`), not hardcoded — so which family answers is a config change, not a code
+change. That paid off directly: partway through the build, this AWS account's Bedrock
+**inference** turned out to be gated account-wide — every model tried, Amazon Nova, Amazon Titan,
+and Anthropic Claude alike, returned `ValidationException: Operation not allowed` in both
+`us-east-1` and `us-west-2`, for both on-demand and inference-profile IDs, even though the control
+plane could still list all 121 available models. That's a brand-new-account activation gate, not a
+per-model restriction. The response was two-fold: lean on the model-agnostic design already in
+place, and default to **Amazon's own Nova family**, which activates with the account itself (no
+Anthropic-style access-review queue to wait on), is Converse-API compatible — a drop-in for the
+same `LLMClient.converse()` call Claude would have used — and is materially cheaper, per the table
+above. Claude remains a one-env-var swap (`MODEL_ROUTER_ID` / `MODEL_SIMPLE_ID` /
+`MODEL_ANALYTICAL_ID`) away if/when its access is granted on this account; nothing about the
+routing logic, prompts, or pipeline changes either way. The assignment's model-efficiency hint
+turns out to have a second dimension worth naming: picking the right-sized model per task is only
+half the story when a single vendor's access gate can stall the whole system regardless of which
+tier you asked for.
 
 **Example cost per question**, using the estimates above:
 
-- *Simple fact* ("What was profit before tax in FY25?") — one router call plus one Haiku answer
-  call, both over the ~500–900-token context a metric-store lookup produces. **≈ $0.002–0.003**
-  per question.
-- *Analytical / hybrid* ("Why did CAR decrease in Q4 2025?") — one router call (Haiku) plus one
-  Sonnet answer call over a larger context (metric block plus up to 6 retrieved narrative chunks,
-  ~2,500 tokens). **≈ $0.012–0.015** per question.
+- *Simple fact* ("What was profit before tax in FY25?") — one router call plus one Nova Lite
+  answer call, both over the ~500–900-token context a metric-store lookup produces. **≈
+  $0.0001–0.0002** per question.
+- *Analytical / hybrid* ("Why did CAR decrease in Q4 2025?") — one router call (Nova Lite) plus
+  one Nova Pro answer call over a larger context (metric block plus up to 6 retrieved narrative
+  chunks, ~2,500 tokens). **≈ $0.003–0.004** per question.
 
 Both numbers are dominated by the answer call, not the router — which is the point: the router
-itself is cheap enough (Haiku, ~300-token system prompt, JSON-only output) that adding a
+itself is cheap enough (Nova Lite, ~300-token system prompt, JSON-only output) that adding a
 classification step ahead of *every* request is close to free, and it's what keeps every
-`metric`, `chitchat`, or simple `narrative` question off Sonnet entirely. Retrieval itself (BM25 +
-cosine over 25 in-memory chunks) costs nothing beyond the one Titan query embedding, which at
+`metric`, `chitchat`, or simple `narrative` question off Nova Pro entirely. Retrieval itself (BM25
++ cosine over 25 in-memory chunks) costs nothing beyond the one Titan query embedding, which at
 $0.02 per 1M input tokens is functionally free per question.
 
 The router also does double duty for cost: `chitchat` and `out_of_scope` turns skip retrieval
 *and* the answer-model call entirely (`pipeline.py::handle()` returns a canned reply directly), so
-a greeting or an out-of-scope question costs exactly one Haiku call, not two.
+a greeting or an out-of-scope question costs exactly one Nova Lite call, not two.
 
 ---
 
@@ -237,10 +258,11 @@ unit-test job (which stays credential-free) — `pytest -m eval` opts in:
 
 Grounded cases are designed to be judged by case-insensitive substring match against the
 known-correct figure(s) pulled from the source PDF. Refusal cases are designed to be judged by a
-second, independent Haiku call that asks a fresh model instance "does this reply decline to
-answer?" and expects `YES` — rather than string-matching the refusal text itself, since a refusal
-can be phrased many ways, and the interesting failure mode (a refusal that leaks a fabricated
-number anyway) wouldn't be caught by keyword matching alone.
+second, independent call to the configured router model (Nova Lite by default) that asks a fresh
+model instance "does this reply decline to answer?" and expects `YES` — rather than
+string-matching the refusal text itself, since a refusal can be phrased many ways, and the
+interesting failure mode (a refusal that leaks a fabricated number anyway) wouldn't be caught by
+keyword matching alone.
 
 > **TODO (pending results):** the eval suite is implemented and wired (`tests/evals/golden.yaml`
 > holds all 15 cases; `pytest -m eval --collect-only` lists them), but has not yet been *run* —

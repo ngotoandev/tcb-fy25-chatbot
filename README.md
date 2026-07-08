@@ -56,12 +56,12 @@ flowchart LR
 
     subgraph runtime [Runtime - one Fargate container]
         UI[React chat SPA] --> API[FastAPI]
-        API --> R{Router - Claude Haiku}
+        API --> R{Router - Nova Lite}
         R -->|metric| MS[Structured metric lookup]
         R -->|narrative| H[Hybrid retrieval BM25 + cosine]
         R -->|hybrid| MS & H
         R -->|chitchat / out-of-scope| DIRECT[No retrieval]
-        MS --> A[Answer model: Haiku simple / Sonnet analytical]
+        MS --> A[Answer model: Nova Lite simple / Nova Pro analytical]
         H --> A
         DIRECT --> A
         A --> UI
