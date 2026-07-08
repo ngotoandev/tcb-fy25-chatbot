@@ -1,0 +1,23 @@
+# Assignment PDF is TCB's document — not republished in the submission repo
+requirements/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
