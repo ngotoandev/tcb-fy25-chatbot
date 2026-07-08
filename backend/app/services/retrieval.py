@@ -23,7 +23,11 @@ class Retriever:
         npz = np.load(d / "embeddings.npz", allow_pickle=False)
         self.vectors: np.ndarray = npz["vectors"]          # (n, 1024) normalized
         self.chunk_ids: list[str] = [str(x) for x in npz["chunk_ids"]]
-        assert [c["chunk_id"] for c in self.chunks] == self.chunk_ids, "artifacts out of sync"
+        expected_ids = [c["chunk_id"] for c in self.chunks]
+        if expected_ids != self.chunk_ids:
+            raise RuntimeError(
+                f"artifacts out of sync: chunks.json has {len(expected_ids)} ids, "
+                f"embeddings.npz has {len(self.chunk_ids)}; regenerate with `python -m ingest.run`")
         if "placeholder" in npz.files and bool(npz["placeholder"][0]):
             logging.getLogger(__name__).warning(
                 "Retriever loaded PLACEHOLDER embeddings (not real Titan vectors) — "
@@ -33,10 +37,12 @@ class Retriever:
 
     def search(self, query: str, query_vec: np.ndarray | None, top_k: int = 6) -> list[dict]:
         n = len(self.chunks)
-        bm25_rank = np.argsort(-np.asarray(self._bm25.get_scores(_tokens(query))))
+        bm25_scores = np.asarray(self._bm25.get_scores(_tokens(query)))
+        bm25_rank = np.argsort(-bm25_scores)
         rrf = np.zeros(n)
         for rank, idx in enumerate(bm25_rank):
-            rrf[idx] += 1.0 / (RRF_K + rank)
+            if bm25_scores[idx] > 0:            # don't reward docs the keyword ranker didn't match
+                rrf[idx] += 1.0 / (RRF_K + rank)
         if query_vec is not None:
             cos_rank = np.argsort(-(self.vectors @ query_vec.astype(np.float32)))
             for rank, idx in enumerate(cos_rank):

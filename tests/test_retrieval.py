@@ -13,6 +13,14 @@ def test_vector_path_with_self_embedding():
     hits = r.search("zzz nonsense zzz", query_vec=vec, top_k=3)
     assert hits[0]["chunk_id"] == r.chunk_ids[0]
 
+def test_vector_path_ranks_self_first_for_every_chunk():
+    # A chunk's own embedding as the query vector must rank that chunk #1,
+    # for every chunk — not just index 0. Guards against RRF position bias
+    # when the BM25 side is uninformative (gibberish query text).
+    for i in range(len(r.chunks)):
+        hits = r.search("zzz nonsense zzz", query_vec=r.vectors[i], top_k=1)
+        assert hits[0]["chunk_id"] == r.chunk_ids[i], f"chunk {i} did not rank itself first"
+
 def test_expand_query():
     glossary = {"CASA": "current account savings account"}
     out = expand_query("What is the CASA ratio?", glossary)
