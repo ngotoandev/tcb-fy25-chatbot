@@ -1,0 +1,683 @@
+[
+ {
+  "metric_id": "total_assets",
+  "name": "Total assets",
+  "aliases": [
+   "assets"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 978799,
+   "1Q25": 989216,
+   "2Q25": 1037645,
+   "3Q25": 1129570,
+   "4Q25": 1192344
+  },
+  "qoq": "+5.6%",
+  "yoy": "+21.8%",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "customer_deposits",
+  "name": "Deposits from customers",
+  "aliases": [
+   "deposits",
+   "customer deposits"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 564536,
+   "1Q25": 569855,
+   "2Q25": 589078,
+   "3Q25": 638453,
+   "4Q25": 665550
+  },
+  "qoq": "+4.2%",
+  "yoy": "+17.9%",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "credit_growth_ytd",
+  "name": "Credit growth (YTD, bank-only)",
+  "aliases": [
+   "credit growth",
+   "loan growth"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 20.8,
+   "1Q25": 3.8,
+   "2Q25": 10.6,
+   "3Q25": 16.8,
+   "4Q25": 18.4
+  },
+  "qoq": "+160 bps",
+  "yoy": "-249 bps",
+  "note": "Bank-only per SBV quota; press text cites 18.36% YTD",
+  "source_page": 13
+ },
+ {
+  "metric_id": "casa_ratio",
+  "name": "CASA ratio",
+  "aliases": [
+   "casa",
+   "current account savings account ratio"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 40.8,
+   "1Q25": 39.4,
+   "2Q25": 41.1,
+   "3Q25": 42.5,
+   "4Q25": 40.4
+  },
+  "qoq": "-217 bps",
+  "yoy": "-44 bps",
+  "note": "Includes Auto-earning; industry-leading",
+  "source_page": 13
+ },
+ {
+  "metric_id": "casa_balance",
+  "name": "CASA balance",
+  "aliases": [
+   "casa balance"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q25": 268700
+  },
+  "qoq": null,
+  "yoy": "+16.6%",
+  "note": "~VND 269 trillion; retail CASA +17.7% YoY, corporate +14.8% YoY",
+  "source_page": 3
+ },
+ {
+  "metric_id": "npl",
+  "name": "Non-performing loan ratio (NPL)",
+  "aliases": [
+   "npl",
+   "bad debt",
+   "non performing"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 1.17,
+   "1Q25": 1.23,
+   "2Q25": 1.32,
+   "3Q25": 1.23,
+   "4Q25": 1.13
+  },
+  "qoq": "-10 bps",
+  "yoy": "-4 bps",
+  "note": "Organic NPL (pre-CIC) 0.98% vs 0.96% at 3Q25",
+  "source_page": 13
+ },
+ {
+  "metric_id": "credit_cost_ltm",
+  "name": "Credit costs (LTM)",
+  "aliases": [
+   "credit cost"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 0.8,
+   "1Q25": 0.7,
+   "2Q25": 0.6,
+   "3Q25": 0.6,
+   "4Q25": 0.6
+  },
+  "qoq": "+5 bps",
+  "yoy": "-17 bps",
+  "note": "0.4% after recoveries",
+  "source_page": 13
+ },
+ {
+  "metric_id": "coverage_ratio",
+  "name": "Loan loss coverage ratio",
+  "aliases": [
+   "coverage",
+   "llr"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 113.8,
+   "1Q25": 111.4,
+   "2Q25": 106.4,
+   "3Q25": 119.1,
+   "4Q25": 127.9
+  },
+  "qoq": "+879 bps",
+  "yoy": "+1,407 bps",
+  "note": "9th consecutive quarter above 100%",
+  "source_page": 13
+ },
+ {
+  "metric_id": "car_basel2",
+  "name": "CAR (Basel II)",
+  "aliases": [
+   "car",
+   "capital adequacy"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 15.4,
+   "1Q25": 15.3,
+   "2Q25": 15.0,
+   "3Q25": 15.8,
+   "4Q25": 14.6
+  },
+  "qoq": "-120 bps",
+  "yoy": "-78 bps",
+  "note": "Q4 decline reflects >VND 7tn cash dividend paid October 2025",
+  "source_page": 13
+ },
+ {
+  "metric_id": "tier1",
+  "name": "Basel II Tier 1 ratio",
+  "aliases": [
+   "tier 1"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 14.7,
+   "1Q25": 14.7,
+   "2Q25": 14.3,
+   "3Q25": 14.2,
+   "4Q25": 13.7
+  },
+  "qoq": "-57 bps",
+  "yoy": "-106 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "st_funding_mlt",
+  "name": "Short-term funding to medium/long-term loans",
+  "aliases": [
+   "short term funding"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 26.5,
+   "1Q25": 27.1,
+   "2Q25": 26.4,
+   "3Q25": 24.1,
+   "4Q25": 24.6
+  },
+  "qoq": "+50 bps",
+  "yoy": "-190 bps",
+  "note": "SBV limit 30%; bank-only",
+  "source_page": 13
+ },
+ {
+  "metric_id": "ldr",
+  "name": "Loan-to-deposit ratio (LDR)",
+  "aliases": [
+   "ldr",
+   "loan to deposit"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 77.1,
+   "1Q25": 80.1,
+   "2Q25": 82.4,
+   "3Q25": 81.2,
+   "4Q25": 76.5
+  },
+  "qoq": "-470 bps",
+  "yoy": "-60 bps",
+  "note": "SBV limit 85%; bank-only",
+  "source_page": 13
+ },
+ {
+  "metric_id": "nii",
+  "name": "Net interest income (NII)",
+  "aliases": [
+   "net interest income"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 8602,
+   "4Q25": 10788,
+   "FY24": 35508,
+   "FY25": 38155
+  },
+  "qoq": null,
+  "yoy": "4Q +25.4%; FY +7.5%",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "non_ii",
+  "name": "Non-interest income",
+  "aliases": [
+   "non interest income"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 953,
+   "4Q25": 4007,
+   "FY24": 11482,
+   "FY25": 15236
+  },
+  "qoq": null,
+  "yoy": "4Q +320.5%; FY +32.7%",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "toi",
+  "name": "Total operating income (TOI)",
+  "aliases": [
+   "toi",
+   "operating income",
+   "revenue"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 9555,
+   "4Q25": 14795,
+   "FY24": 46990,
+   "FY25": 53391
+  },
+  "qoq": null,
+  "yoy": "4Q +54.8%; FY +13.6%",
+  "note": "4Q24 base included negative banca-termination impact",
+  "source_page": 13
+ },
+ {
+  "metric_id": "opex",
+  "name": "Operating expenses",
+  "aliases": [
+   "opex",
+   "costs",
+   "operating expenses"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 4741,
+   "4Q25": 4824,
+   "FY24": 15370,
+   "FY25": 16432
+  },
+  "qoq": null,
+  "yoy": "4Q +1.8%; FY +6.9%",
+  "note": "Expense line (shown as VND 16,432 bn); driven by IT investment",
+  "source_page": 13
+ },
+ {
+  "metric_id": "pbt",
+  "name": "Profit before tax (PBT)",
+  "aliases": [
+   "pbt",
+   "profit",
+   "pretax profit",
+   "earnings"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q24": 4696,
+   "4Q25": 9153,
+   "FY24": 27538,
+   "FY25": 32538
+  },
+  "qoq": null,
+  "yoy": "4Q +94.9%; FY +18.2%",
+  "note": "4Q25 was a third consecutive quarterly PBT record; FY exceeded guidance",
+  "source_page": 13
+ },
+ {
+  "metric_id": "nfi_toi",
+  "name": "NFI / TOI",
+  "aliases": [
+   "fee income ratio"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 24.0,
+   "4Q25": 20.4,
+   "FY24": 22.6,
+   "FY25": 21.5
+  },
+  "qoq": null,
+  "yoy": "4Q -361 bps; FY -116 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "cir",
+  "name": "Cost-to-income ratio (CIR)",
+  "aliases": [
+   "cir",
+   "cost income"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 49.6,
+   "4Q25": 32.6,
+   "FY24": 32.7,
+   "FY25": 30.8
+  },
+  "qoq": null,
+  "yoy": "4Q -1,701 bps; FY -193 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "roa",
+  "name": "ROA (LTM)",
+  "aliases": [
+   "roa",
+   "return on assets"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 2.4,
+   "4Q25": 2.4,
+   "FY24": 2.4,
+   "FY25": 2.4
+  },
+  "qoq": null,
+  "yoy": "+5 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "roe",
+  "name": "ROE (LTM)",
+  "aliases": [
+   "roe",
+   "return on equity"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 15.5,
+   "4Q25": 16.0,
+   "FY24": 15.5,
+   "FY25": 16.0
+  },
+  "qoq": null,
+  "yoy": "+48 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "nim_ltm",
+  "name": "NIM (LTM)",
+  "aliases": [
+   "nim",
+   "net interest margin"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 4.4,
+   "4Q25": 3.8,
+   "FY24": 4.4,
+   "FY25": 3.8
+  },
+  "qoq": null,
+  "yoy": "-54 bps",
+  "note": "Quarterly NIM edged up to 3.9% in 4Q25 (p2); NIM LTM EOP 3.7%",
+  "source_page": 13
+ },
+ {
+  "metric_id": "cost_of_funds",
+  "name": "Cost of funds",
+  "aliases": [
+   "cof",
+   "funding cost"
+  ],
+  "unit": "%",
+  "values": {
+   "4Q24": 3.4,
+   "4Q25": 3.6,
+   "FY24": 3.3,
+   "FY25": 3.5
+  },
+  "qoq": null,
+  "yoy": "4Q +14 bps; FY +13 bps",
+  "note": null,
+  "source_page": 13
+ },
+ {
+  "metric_id": "nfi",
+  "name": "Net fee income (NFI)",
+  "aliases": [
+   "fee income",
+   "fees"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 11500
+  },
+  "qoq": null,
+  "yoy": "+7.8%",
+  "note": "VND 11.5 trillion",
+  "source_page": 2
+ },
+ {
+  "metric_id": "ib_fees",
+  "name": "Investment banking fees",
+  "aliases": [
+   "ib fees",
+   "investment banking"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 4200,
+   "4Q25": 797.0
+  },
+  "qoq": null,
+  "yoy": "FY +20.7%; 4Q -12.9%",
+  "note": null,
+  "source_page": 2
+ },
+ {
+  "metric_id": "lc_fees",
+  "name": "LC, remittance, cash & settlement fees",
+  "aliases": [
+   "letters of credit",
+   "lc",
+   "remittance"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 3100
+  },
+  "qoq": null,
+  "yoy": "-14.0%",
+  "note": "4Q25 +69.2% YoY recovery; cash & settlement VND 925.3 bn FY25 (+31.9%)",
+  "source_page": 2
+ },
+ {
+  "metric_id": "card_fees",
+  "name": "Card fees",
+  "aliases": [
+   "cards"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 1700
+  },
+  "qoq": null,
+  "yoy": "-15.1%",
+  "note": "4Q25 +6.5% YoY; leading Visa market share",
+  "source_page": 2
+ },
+ {
+  "metric_id": "fx_fees",
+  "name": "FX sales income",
+  "aliases": [
+   "fx",
+   "foreign exchange"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 1200,
+   "4Q25": 314.6
+  },
+  "qoq": null,
+  "yoy": "FY +36.9%; 4Q +14.6%",
+  "note": null,
+  "source_page": 2
+ },
+ {
+  "metric_id": "banca_fees",
+  "name": "Bancassurance fees",
+  "aliases": [
+   "banca",
+   "insurance fees"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 1200
+  },
+  "qoq": null,
+  "yoy": "+91.8%",
+  "note": "Recovery after 4Q24 partnership termination",
+  "source_page": 3
+ },
+ {
+  "metric_id": "provisions",
+  "name": "Provision expenses",
+  "aliases": [
+   "provisions"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 4400
+  },
+  "qoq": null,
+  "yoy": "+8.3%",
+  "note": "vs 18.36% credit growth",
+  "source_page": 3
+ },
+ {
+  "metric_id": "recoveries",
+  "name": "Recoveries",
+  "aliases": [
+   "debt recoveries"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 1400
+  },
+  "qoq": null,
+  "yoy": "+19.0%",
+  "note": null,
+  "source_page": 3
+ },
+ {
+  "metric_id": "retail_credit",
+  "name": "Retail credit balance",
+  "aliases": [
+   "retail loans",
+   "retail lending"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q25": 372000
+  },
+  "qoq": null,
+  "yoy": "+30.8% YTD",
+  "note": "Unsecured book 3.5x YTD; mortgage +24.7% YTD; margin lending +69.3% YTD",
+  "source_page": 3
+ },
+ {
+  "metric_id": "corporate_credit",
+  "name": "Corporate credit balance",
+  "aliases": [
+   "corporate loans"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q25": 452100
+  },
+  "qoq": null,
+  "yoy": "+13.4% YTD",
+  "note": "Real-estate share of loans 30.7% (from 33.2% a year earlier)",
+  "source_page": 3
+ },
+ {
+  "metric_id": "customers",
+  "name": "Total customers",
+  "aliases": [
+   "customer count",
+   "how many customers"
+  ],
+  "unit": "million",
+  "values": {
+   "4Q25": 18.0
+  },
+  "qoq": null,
+  "yoy": null,
+  "note": "+2.7m new in 2025; 62.3% of new retail acquired digitally, 30.2% branches, 7.5% ecosystem",
+  "source_page": 6
+ },
+ {
+  "metric_id": "ebank_txn",
+  "name": "Retail e-banking transactions (4Q25)",
+  "aliases": [
+   "e-banking",
+   "transactions"
+  ],
+  "unit": "billion",
+  "values": {
+   "4Q25": 1.2
+  },
+  "qoq": null,
+  "yoy": "+26.9%",
+  "note": "#1 market share: outbound 17.0%, inbound 15.6%",
+  "source_page": 6
+ },
+ {
+  "metric_id": "tcbs_pbt",
+  "name": "TCBS profit before tax",
+  "aliases": [
+   "tcbs profit",
+   "techcom securities profit"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "4Q25": 2041,
+   "FY25": 7109
+  },
+  "qoq": null,
+  "yoy": "4Q +120%; FY +50%",
+  "note": "123% of full-year target; ROE 16.7%, ROA 8.4%; margin lending ~VND 44tn",
+  "source_page": 4
+ },
+ {
+  "metric_id": "tcgi_premiums",
+  "name": "Techcom Insurance premiums (FY25)",
+  "aliases": [
+   "tcgi",
+   "insurance premiums"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 500
+  },
+  "qoq": null,
+  "yoy": null,
+  "note": ">VND 500bn premiums, >650,000 customers in first full year",
+  "source_page": 5
+ },
+ {
+  "metric_id": "dividend",
+  "name": "Cash dividend paid (Oct 2025)",
+  "aliases": [
+   "dividend"
+  ],
+  "unit": "VND bn",
+  "values": {
+   "FY25": 7000
+  },
+  "qoq": null,
+  "yoy": null,
+  "note": ">VND 7 trillion paid October 2025; caused CAR decline in Q4",
+  "source_page": 4
+ }
+]
