@@ -11,16 +11,27 @@ Rules — non-negotiable:
 5. Be concise: 1-4 sentences for facts, a short structured answer for analysis.
 6. This is factual reporting, not financial advice; refuse advice requests."""
 
-def build_context(metric_block: str, chunks: list[dict]) -> tuple[str, list[Citation]]:
+def build_context(metric_block: str, metric_hits: list[dict],
+                  chunks: list[dict]) -> tuple[str, list[Citation]]:
     parts: list[str] = []
     citations: list[Citation] = []
     if metric_block:
         parts.append("VERIFIED FINANCIAL METRICS (exact figures):\n" + metric_block)
-        citations.append(Citation(page=13, snippet="FY25 financial summary table (verified figures)"))
+        for hit in metric_hits:
+            citations.append(Citation(page=hit["source_page"],
+                                      snippet=f"{hit['name']} — verified figure"))
     for c in chunks:
         parts.append(f"[p.{c['page']}] ({c['section']})\n{c['text']}")
         citations.append(Citation(page=c["page"], snippet=c["text"][:200]))
-    return "\n\n---\n\n".join(parts), citations
+    # Dedupe by page, preserving first-seen order (a metric and a chunk citing
+    # the same page should surface as a single citation chip).
+    seen_pages: set[int] = set()
+    deduped: list[Citation] = []
+    for cit in citations:
+        if cit.page not in seen_pages:
+            seen_pages.add(cit.page)
+            deduped.append(cit)
+    return "\n\n---\n\n".join(parts), deduped
 
 def answer(llm: LLMClient, model_id: str, history: list[Turn],
            standalone_query: str, context: str) -> str:

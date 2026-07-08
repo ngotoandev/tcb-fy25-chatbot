@@ -18,6 +18,12 @@ OOS_REPLY = ("I can only answer from Techcombank's FY25 results press release, s
              "with that. I can cover FY25/quarterly financials, subsidiaries (TCBS, Techcom Life, "
              "TCGI), ratings, and business highlights.")
 
+def _model_label(model_id: str) -> str:
+    for fam in ("haiku", "sonnet", "opus"):
+        if fam in model_id:
+            return fam
+    return model_id.split(".")[-1]
+
 class ChatPipeline:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -36,20 +42,21 @@ class ChatPipeline:
 
         citations: list[Citation] = []
         model_used = self.settings.model_router_id
+        metric_block = ""
+        metric_hits: list[dict] = []
+        chunks: list[dict] = []
         if decision.intent == "chitchat":
             reply = CHITCHAT_REPLY
         elif decision.intent == "out_of_scope":
             reply = OOS_REPLY
         else:
-            metric_block = ""
-            chunks: list[dict] = []
             if decision.intent in ("metric", "hybrid"):
-                hits = self.metrics.lookup(decision.standalone_query)
-                metric_block = self.metrics.render(hits, decision.standalone_query)
+                metric_hits = self.metrics.lookup(decision.standalone_query)
+                metric_block = self.metrics.render(metric_hits, decision.standalone_query)
             if decision.intent in ("narrative", "hybrid") or not metric_block:
                 q = expand_query(decision.standalone_query, self.glossary)
                 chunks = self.retriever.search(q, self.llm.embed_query(q), top_k=6)
-            context, citations = answerer.build_context(metric_block, chunks)
+            context, citations = answerer.build_context(metric_block, metric_hits, chunks)
             model_used = (self.settings.model_simple_id if decision.complexity == "simple"
                           else self.settings.model_analytical_id)
             reply = answerer.answer(self.llm, model_used, history,
@@ -58,5 +65,5 @@ class ChatPipeline:
         self.store.append(sid, Turn(role="user", content=message))
         self.store.append(sid, Turn(role="assistant", content=reply))
         return ChatResponse(session_id=sid, reply=reply, citations=citations,
-                            route=decision.intent, model=model_used.split(".")[-1],
+                            route=decision.intent, model=_model_label(model_used),
                             latency_ms=int((time.monotonic() - t0) * 1000))

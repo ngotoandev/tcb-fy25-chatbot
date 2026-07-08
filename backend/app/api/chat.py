@@ -11,15 +11,19 @@ def _rate_limited(key: str, per_min: int) -> bool:
     q = _hits[key]
     while q and now - q[0] > 60:
         q.popleft()
+    if not q:
+        del _hits[key]  # bound _hits growth: don't keep empty deques for idle keys
     if len(q) >= per_min:
         return True
-    q.append(now)
+    _hits[key].append(now)
     return False
 
 @router.post("/api/chat", response_model=ChatResponse)
 def chat(req: ChatRequest, request: Request) -> ChatResponse:
     pipeline = request.app.state.pipeline
-    key = req.session_id or (request.client.host if request.client else "anon")
+    # Keyed on connecting IP only -- session_id is an unauthenticated client-supplied
+    # field, so including it would let a client bypass the limit by rotating it.
+    key = request.client.host if request.client else "anon"
     if _rate_limited(key, pipeline.settings.rate_limit_per_min):
         raise HTTPException(status_code=429, detail="Too many requests — please slow down.")
     try:
