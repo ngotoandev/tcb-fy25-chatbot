@@ -22,17 +22,22 @@ full reasoning is in [`SOLUTION.md`](./SOLUTION.md).
 ```bash
 git clone https://github.com/ngotoandev/tcb-fy25-chatbot.git
 cd tcb-fy25-chatbot
-cp .env.example .env        # paste AWS creds with Bedrock access (us-east-1) — or see below
+cp .env.example .env        # pick a provider (see below)
 docker compose up --build   # ~2 min build (frontend + backend, one multi-stage image)
 ```
 
 Then open **http://localhost:8080** — the FastAPI container serves both the API and the built
 React SPA.
 
-**No AWS credentials?** Set `MOCK_LLM=true` in `.env` instead of pasting keys. The app boots and
-the full UI is clickable with canned, deterministic replies — no Bedrock call is ever made. This
-exists specifically so a reviewer can inspect the running product without first needing Bedrock
-model access provisioned on their own account.
+**Pick a provider in `.env`** (`LLM_PROVIDER`) — the LLM layer is pluggable, so a reviewer can run
+real answers whichever key they have:
+
+| `.env` setting | What runs |
+|---|---|
+| `MOCK_LLM=true` | No credentials at all — canned deterministic replies, full clickable UI. For inspecting the product without provisioning anything. |
+| `LLM_PROVIDER=anthropic` + `ANTHROPIC_API_KEY=…` | **Real answers via Claude, no AWS needed.** Retrieval is BM25-only (Anthropic has no embeddings API); metric answers are exact-lookup and unaffected. |
+| `LLM_PROVIDER=openai` + `OPENAI_API_KEY=…` | Real answers via GPT (BM25-only, same as above). |
+| `LLM_PROVIDER=bedrock` + AWS creds (us-east-1, Bedrock enabled) | Full path: Nova on Bedrock + Titan embeddings (hybrid BM25 + vector retrieval). |
 
 Nothing needs to be built or ingested before this works: `data/artifacts/` (chunks, hand-verified
 metrics, glossary, embeddings) is pre-built and committed to the repo, and gets baked into the
@@ -149,11 +154,16 @@ No AWS credentials are stored as GitHub secrets — the CI role is assumed via O
 ## Testing
 
 ```bash
-pytest                 # unit + integration — no AWS credentials needed
-pytest -m eval -s      # golden evals against real Bedrock — needs AWS creds with Bedrock access
+pytest                 # unit + integration — no credentials needed
+# golden evals against a LIVE provider — set LLM_PROVIDER + key in .env, then load it:
+set -a; . ./.env; set +a && pytest -m eval -s
 ```
 
-`pytest` runs the unit/integration suite (35 tests as of this writing) with Bedrock mocked or
+The eval suite was last run **15/15** on the Anthropic provider (Claude Haiku/Sonnet) — see
+[`docs/eval-results.md`](docs/eval-results.md). It runs against whatever `LLM_PROVIDER` (+ key) is
+set; on `bedrock` it additionally exercises the Titan/vector retrieval path.
+
+`pytest` runs the unit/integration suite (40 tests as of this writing) with the LLM mocked or
 bypassed entirely: PDF chunker boundaries, metric alias/period matching, hybrid-retrieval RRF
 fusion (including its out-of-vocabulary fallback path), router JSON parsing, the Bedrock client's
 retry/backoff logic, and the `/api/chat` pipeline end-to-end via `MOCK_LLM`. None of it touches a

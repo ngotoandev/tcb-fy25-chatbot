@@ -264,14 +264,25 @@ string-matching the refusal text itself, since a refusal can be phrased many way
 interesting failure mode (a refusal that leaks a fabricated number anyway) wouldn't be caught by
 keyword matching alone.
 
-> **TODO (pending results):** the eval suite is implemented and wired (`tests/evals/golden.yaml`
-> holds all 15 cases; `pytest -m eval --collect-only` lists them), but has not yet been *run* —
-> it waits on AWS Bedrock model access being granted for this account. That's the same
-> environmental gate that has `data/artifacts/embeddings.npz` still running on deterministic
-> placeholder vectors rather than real Titan embeddings (and a CI guard in `deploy.yml` refuses to
-> build an image on placeholder embeddings, so a deploy can't accidentally ship them). Once access
-> lands: regenerate real embeddings via `python -m ingest.run`, run `pytest -m eval -s`, target
-> 15/15, and paste the pass/fail table here (also saved to `docs/eval-results.md`).
+**Results — 15/15 (run 2026-07-09).** The suite was run against the **live Anthropic API** (Claude
+Haiku 4.5 for the router/simple answers and the refusal judge, Claude Sonnet 4.6 for analytical),
+with retrieval on **BM25 only** — the Anthropic API has no embeddings endpoint, and the metric
+answers are exact-lookup so they're unaffected. Full per-case table with actual replies:
+[`docs/eval-results.md`](./docs/eval-results.md). Highlights: every metric exact (PBT 32,538; CASA
+40.4%; NPL 1.13%; CAR 14.6%; deposits 665,550; 18.0m customers); the multi-turn case resolved
+"what about Q3?" to 3Q25 = **42.5%**; and all three out-of-scope traps (FY23, a competitor's CASA,
+"should I buy the stock?") were declined and confirmed by the second-model judge.
+
+> **Why Anthropic and not Bedrock/Nova for the eval run:** the AWS account's Bedrock *inference*
+> was gated account-wide at submission (`ValidationException: Operation not allowed` for every model
+> in every region — a new-account activation state, not a per-model access issue). Rather than block
+> the whole deliverable on an AWS-side gate, the LLM layer is **provider-pluggable** (`LLM_PROVIDER`
+> = `bedrock` | `anthropic` | `openai`): the model IDs are plain settings and `LLMClient` dispatches
+> per provider, so pointing at the Anthropic API is a one-env-var change with no code edit. The
+> committed default remains Bedrock/Nova; flipping `LLM_PROVIDER=bedrock` (plus regenerating real
+> Titan embeddings via `python -m ingest.run` for full hybrid retrieval) restores the all-AWS path
+> the moment the account activates — and the CI guard in `deploy.yml` refuses to build an image on
+> placeholder embeddings, so that step can't be skipped on the way to a deploy.
 
 **What 15/15 would and wouldn't prove.** If every case passes, that's real evidence the live
 pipeline — router, both retrieval paths, both answer models, the refusal guard — produces correct
