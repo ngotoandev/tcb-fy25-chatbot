@@ -13,10 +13,27 @@ MOCK_ROUTER_JSON = json.dumps({"intent": "narrative", "standalone_query": "mock"
 logger = logging.getLogger(__name__)
 
 class LLMClient:
+    """Provider-agnostic chat client. `bedrock` uses the AWS Converse API (with
+    Titan embeddings); `anthropic` / `openai` call the vendor API directly and
+    have no embeddings, so retrieval degrades to BM25-only. Mock mode needs no
+    provider client at all (canned responses)."""
+
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
-        self._client = None if settings.mock_llm else boto3.client(
-            "bedrock-runtime", region_name=settings.bedrock_region)
+        self._provider = settings.llm_provider
+        self._client = None
+        if settings.mock_llm:
+            return
+        if self._provider == "bedrock":
+            self._client = boto3.client("bedrock-runtime", region_name=settings.bedrock_region)
+        elif self._provider == "anthropic":
+            import anthropic  # lazy: only needed when this provider is active
+            self._client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+        elif self._provider == "openai":
+            from openai import OpenAI
+            self._client = OpenAI()  # reads OPENAI_API_KEY from env
+        else:
+            raise ValueError(f"unknown llm_provider: {self._provider!r} (bedrock|anthropic|openai)")
 
     def _sleep(self, seconds: float) -> None:
         time.sleep(seconds)
@@ -26,6 +43,22 @@ class LLMClient:
         if self._settings.mock_llm:
             return MOCK_ROUTER_JSON if "intent" in system else \
                 "[MOCK] This is a canned grounded answer for UI testing. [p.1]"
+        if self._provider == "anthropic":
+            # system is a top-level param; message content is a plain string.
+            # The SDK auto-retries throttles/5xx internally (max_retries).
+            resp = self._client.messages.create(
+                model=model_id, max_tokens=max_tokens, system=system, temperature=temperature,
+                messages=[{"role": m["role"], "content": m["content"]} for m in messages],
+            )
+            return "".join(b.text for b in resp.content if b.type == "text")
+        if self._provider == "openai":
+            resp = self._client.chat.completions.create(
+                model=model_id, max_tokens=max_tokens, temperature=temperature,
+                messages=[{"role": "system", "content": system},
+                          *({"role": m["role"], "content": m["content"]} for m in messages)],
+            )
+            return resp.choices[0].message.content or ""
+        # bedrock (default): manual retry/backoff on the boto ClientError shape.
         last_err: Exception | None = None
         for attempt in range(4):
             try:
@@ -47,7 +80,9 @@ class LLMClient:
         raise last_err  # pragma: no cover
 
     def embed_query(self, text: str) -> np.ndarray | None:
-        if self._settings.mock_llm:
+        # Embeddings come from Titan (Bedrock only). Mock and the direct
+        # anthropic/openai providers return None → retrieval uses BM25 alone.
+        if self._settings.mock_llm or self._provider != "bedrock":
             return None
         try:
             body = json.dumps({"inputText": text[:8000], "dimensions": 1024, "normalize": True})
