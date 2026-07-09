@@ -6,14 +6,14 @@ results, grounded exclusively in the official FY25 press release. It is delibera
 right-sized retrieval design built around where naive RAG actually breaks on *this* document. The
 full reasoning is in [`SOLUTION.md`](./SOLUTION.md).
 
-> **TODO (pending):** demo video — recorded last, once the rest of the submission (including the
-> live deploy below) is finalized.
+**Live demo:** deployed on AWS (ECS Fargate behind an ALB) by the GitHub Actions pipeline —
+health at `/api/health`, chat UI at the root. The deploy runs the LLM on the **Anthropic API**
+(`LLM_PROVIDER=anthropic`) because this account's Bedrock activation was pending; the same pipeline
+runs on Bedrock/Nova by flipping one repo variable. *The URL may be torn down after review to
+control cost (`terraform -chdir=infra/main destroy`); a single `git push` to `main` redeploys it,
+since build → infra-apply → smoke-test is fully automated.*
 
-> **TODO (pending):** live URL — not deployed as of this write-up; `infra/bootstrap`'s apply is a
-> manual one-time step (see "AWS deployment" below) that hasn't been run yet. It will be deployed
-> before final submission and the URL shared here / in the demo video. It may be torn down
-> afterward to control AWS cost — redeploying is a single `git push` to `main`, since the whole
-> build → infra-apply → smoke-test pipeline is automated end to end.
+> **TODO (pending):** demo video — recorded last against the live deployment.
 
 ---
 
