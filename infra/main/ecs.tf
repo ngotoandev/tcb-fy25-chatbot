@@ -39,10 +39,17 @@ resource "aws_ecs_task_definition" "app" {
     portMappings = [{ containerPort = local.app_port, protocol = "tcp" }]
     environment = [
       { name = "BEDROCK_REGION", value = var.region },
+      { name = "LLM_PROVIDER", value = var.llm_provider },
       { name = "SESSION_STORE", value = "dynamo" },
       { name = "SESSIONS_TABLE", value = aws_dynamodb_table.sessions.name },
       { name = "MOCK_LLM", value = "false" },
     ]
+    # Vendor API key injected from Secrets Manager (direct-API providers only).
+    # for-expression over the count-0/1 secret keeps this valid when it doesn't exist.
+    secrets = [for s in aws_secretsmanager_secret.llm_api_key : {
+      name      = lookup(local.api_key_env, var.llm_provider, "ANTHROPIC_API_KEY")
+      valueFrom = s.arn
+    }]
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -79,5 +86,7 @@ resource "aws_ecs_service" "app" {
     aws_lb_listener.http,
     aws_iam_role_policy.task,
     aws_iam_role_policy_attachment.execution,
+    aws_iam_role_policy.execution_secrets,         # secret-read grant (if any)
+    aws_secretsmanager_secret_version.llm_api_key, # key value populated before launch
   ]
 }

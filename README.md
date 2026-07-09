@@ -130,11 +130,20 @@ terraform -chdir=infra/bootstrap apply -var "github_repo=ngotoandev/tcb-fy25-cha
 
 Type `yes`, then record the three outputs (`ci_role_arn`, `tfstate_bucket`, `ecr_repo_url`).
 
-Then, in the repo's **Settings → Secrets and variables → Actions → Variables**, set:
+Then, in the repo's **Settings → Secrets and variables → Actions**, set these **Variables**:
 
 - `AWS_ROLE_ARN` = the `ci_role_arn` output
 - `TFSTATE_BUCKET` = the `tfstate_bucket` output
 - `ALERT_EMAIL` = an email address for the budget alert
+- `LLM_PROVIDER` = `bedrock` (default; Nova + Titan) — **or** `anthropic` / `openai` to deploy on a
+  direct vendor API when Bedrock isn't available. Non-`bedrock` runs BM25-only retrieval.
+
+And, **only if `LLM_PROVIDER` is `anthropic` or `openai`**, add one **Secret**:
+
+- `LLM_API_KEY` = your Anthropic (or OpenAI) API key. CI passes it to Terraform, which stores it in
+  Secrets Manager and injects it into the ECS task as a secret env var — it's never placed in the
+  task definition or committed. (When `LLM_PROVIDER=anthropic`, the CI embeddings-guard is skipped
+  since BM25-only needs no Titan vectors, so the committed placeholder `embeddings.npz` is fine.)
 
 From there, deployment is fully automated: **push to `main` → the pipeline deploys.**
 `.github/workflows/deploy.yml` runs on every push to `main` (and on manual dispatch): `test`

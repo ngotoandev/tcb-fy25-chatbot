@@ -14,9 +14,13 @@ jobs:
         with: { python-version: "3.12", cache: pip }
       - run: pip install -r requirements-dev.txt
       - run: pytest
-      - name: Guard against placeholder embeddings
+      - name: Guard against placeholder embeddings (bedrock only)
         run: |
-          python -c "import numpy as np; d = np.load('data/artifacts/embeddings.npz'); assert 'placeholder' not in d.files, 'Refusing to build/deploy PLACEHOLDER embeddings. Run \`python -m ingest.run\` (make ingest) with Bedrock access to generate real Titan vectors, then commit data/artifacts/embeddings.npz.'; print('embeddings OK (real Titan vectors, no placeholder marker)')"
+          if [ "${{ vars.LLM_PROVIDER || 'bedrock' }}" = "bedrock" ]; then
+            python -c "import numpy as np; d = np.load('data/artifacts/embeddings.npz'); assert 'placeholder' not in d.files, 'Refusing to build/deploy PLACEHOLDER embeddings on the bedrock provider. Run make ingest with Bedrock access, then commit data/artifacts/embeddings.npz.'; print('embeddings OK')"
+          else
+            echo "LLM_PROVIDER=${{ vars.LLM_PROVIDER }} -> BM25-only; placeholder embeddings acceptable. Guard skipped."
+          fi
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
       - run: npm ci --prefix frontend && npm run build --prefix frontend
@@ -34,4 +38,4 @@ jobs:
           terraform -chdir=infra/main init
           -backend-config="bucket=${{ vars.TFSTATE_BUCKET }}"
           -backend-config="region=us-east-1"
-      - run: terraform -chdir=infra/main plan -var image_tag=pr -var alert_email=${{ vars.ALERT_EMAIL }}
+      - run: terraform -chdir=infra/main plan -var image_tag=pr -var alert_email=${{ vars.ALERT_EMAIL }} -var llm_provider=${{ vars.LLM_PROVIDER || 'bedrock' }}
