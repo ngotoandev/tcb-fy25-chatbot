@@ -4,7 +4,8 @@ A chat assistant that answers questions about Techcombank's FY25 (fiscal year en
 results, grounded exclusively in the official FY25 press release. It is deliberately not a
 "paste the whole PDF into an LLM" solution and not a generic vector-database RAG stack — it's a
 right-sized retrieval design built around where naive RAG actually breaks on *this* document. The
-full reasoning is in [`SOLUTION.md`](./SOLUTION.md).
+one-page architecture brief is [`ARCHITECTURE.md`](./ARCHITECTURE.md); the full reasoning is in
+[`SOLUTION.md`](./SOLUTION.md).
 
 **Live demo:** deployed on AWS (ECS Fargate behind an ALB) by the GitHub Actions pipeline —
 health at `/api/health`, chat UI at the root. The deploy runs the LLM on the **Anthropic API**
