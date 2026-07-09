@@ -19,7 +19,7 @@ OOS_REPLY = ("I can only answer from Techcombank's FY25 results press release, s
              "TCGI), ratings, and business highlights.")
 
 def _model_label(model_id: str) -> str:
-    for fam in ("haiku", "sonnet", "opus"):
+    for fam in ("nova-micro", "nova-lite", "nova-pro", "haiku", "sonnet", "opus"):
         if fam in model_id:
             return fam
     return model_id.split(".")[-1]

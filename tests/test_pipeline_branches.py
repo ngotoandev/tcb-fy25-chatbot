@@ -44,7 +44,7 @@ def test_metric_branch_dividend_cites_page_4_not_13(monkeypatch):
     monkeypatch.setattr(pipeline_mod, "route", _fake_route("metric", query, "simple"))
     resp = pipeline.handle(None, query)
     assert resp.route == "metric"
-    assert resp.model == "haiku"                    # complexity "simple" -> model_simple_id
+    assert resp.model == "nova-lite"                # complexity "simple" -> model_simple_id
     pages = [c.page for c in resp.citations]
     assert 4 in pages
     assert 13 not in pages
@@ -54,7 +54,7 @@ def test_hybrid_branch_analytical_combines_metric_and_chunk_citations(monkeypatc
     monkeypatch.setattr(pipeline_mod, "route", _fake_route("hybrid", query, "analytical"))
     resp = pipeline.handle(None, query)
     assert resp.route == "hybrid"
-    assert resp.model == "sonnet"                    # complexity "analytical" -> model_analytical_id
+    assert resp.model == "nova-pro"                  # complexity "analytical" -> model_analytical_id
     pages = [c.page for c in resp.citations]
     assert len(pages) >= 2
     assert any(p in (4, 13) for p in pages)          # a metric-sourced page (dividend p.4 / CAR p.13)

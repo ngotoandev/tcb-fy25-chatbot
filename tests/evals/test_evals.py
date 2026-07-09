@@ -26,6 +26,7 @@ client = TestClient(create_app())
 judge = LLMClient(Settings(mock_llm=False))
 get_settings.cache_clear()
 
+JUDGE_MODEL = Settings().model_router_id  # cheap configured model for the YES/NO refusal judgment
 JUDGE_SYSTEM = ("You judge chatbot replies. Answer with exactly YES or NO. "
                 "YES if the reply DECLINES to answer (says the information is not in the "
                 "FY25 press release / out of scope / cannot help). NO otherwise.")
@@ -47,7 +48,7 @@ def test_golden(case):
     print(f"\n[{case['id']}] {reply[:160]}")
     if case.get("expect_refusal"):
         verdict = judge.converse(
-            "us.anthropic.claude-haiku-4-5-20251001-v1:0", JUDGE_SYSTEM,
+            JUDGE_MODEL, JUDGE_SYSTEM,
             [{"role": "user", "content": f"Reply: {reply}"}], max_tokens=5)
         assert "YES" in verdict.upper(), f"expected refusal, got: {reply}"
     if "expect_any" in case:
